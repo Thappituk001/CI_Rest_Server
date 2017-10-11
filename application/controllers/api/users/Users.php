@@ -8,7 +8,7 @@ class Users extends REST_Controller {
 
     function __construct()
     {
-     
+
         parent::__construct();
         $this->load->model('users/users_model','users_model');
         
@@ -19,7 +19,7 @@ class Users extends REST_Controller {
 
     public function users_get()
     {
-        
+
         $users = $this->users_model->getUsers();
 
         $id = $this->get('id');
@@ -29,18 +29,18 @@ class Users extends REST_Controller {
         {
             if ($users)
             {
-             
+
                 $this->response($users, REST_Controller::HTTP_OK);
             }
             else
             {
-                
+
                 $this->response([
                     'status' => FALSE,
                     'message' => 'No users were found'
                 ], REST_Controller::HTTP_NOT_FOUND); 
             }
-        }
+        }//if id ==null
 
         if ($id <= 0)
         {
@@ -55,13 +55,13 @@ class Users extends REST_Controller {
             {
                 foreach ($users as $key => $value)
                 {
-                   if ( $value['id_employee'] === $id)
-                   {
-                    $user = $value;
-                   }
+                    if ( $value['id_employee'] === $id)
+                    {
+                        $user = $value;
+                    }
                 }
             }
-        }
+        }//else
 
         if (!empty($user))
         {
@@ -72,43 +72,74 @@ class Users extends REST_Controller {
             $this->set_response([
                 'status' => FALSE,
                 'message' => 'User could not be found'
-            ], REST_Controller::HTTP_NOT_FOUND); /
+            ], REST_Controller::HTTP_NOT_FOUND); 
+        }//else
+    }
+
+
+
+
+    public function users_post()
+    {
+
+        $result = $this->post();
+
+        if($result === FALSE)
+        {
+            $this->response(array('status' => 'failed'));
         }
-    }
-}
+        else
+        {
+            $this->response($result);
+        }
 
-public function users_post()
-{
-    
-    $result = $this->post();
-    
-    if($result === FALSE)
+        $this->set_response($message, REST_Controller::HTTP_CREATED); 
+    }
+
+     public function getVisitor_post()
     {
-        $this->response(array('status' => 'failed'));
+
+        $result  = $this->post();
+        $ip      = $this->post('ip_address');
+
+       
+        if($result === FALSE)
+        {
+            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); 
+        }
+        else
+        {
+            $user = $this->users_model->getVisitor($ip);
+
+            if(!empty($user))
+            {
+                $this->response($user, REST_Controller::HTTP_OK); 
+            }
+            else
+            {
+                $message = [
+                    'message' => 'no resource'
+                ];
+                $this->response($message, REST_Controller::HTTP_OK); 
+            }
+        }//else
+
     }
-    else
+
+    public function users_delete($id)
     {
-        $this->response($result);
+        if ($id <= 0)
+        {
+
+            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); 
+        }
+
+        $message = [
+            'id' => $id,
+            'message' => 'Deleted the resource'
+        ];
+
+        $this->set_response($message, REST_Controller::HTTP_NO_CONTENT); 
     }
-    
-    $this->set_response($message, REST_Controller::HTTP_CREATED); 
-}
-
-
-public function users_delete($id)
-{
-    if ($id <= 0)
-    {
-        
-        $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); 
-    }
-    
-    $message = [
-        'id' => $id,
-        'message' => 'Deleted the resource'
-    ];
-
-    $this->set_response($message, REST_Controller::HTTP_NO_CONTENT); 
-}
 
 }
