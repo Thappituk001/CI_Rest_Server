@@ -48,7 +48,6 @@ class Users extends REST_Controller {
         }
         else
         {
-
             $user = NULL;
 
             if (!empty($users))

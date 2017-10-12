@@ -46,12 +46,12 @@ $config['rest_default_format'] = 'json';
 $config['rest_supported_formats'] = [
     'json',
     'array',
-    // 'csv',
-    // 'html',
+    'csv',
+    'html',
     'jsonp',
     'php',
     'serialized',
-    // 'xml',
+    'xml',
 ];
 
 /*
@@ -104,8 +104,8 @@ $config['rest_realm'] = 'REST API';
 | Set to specify the REST API requires to be logged in
 |
 | FALSE     No login required
-| 'basic'   Unsecured login
-| 'digest'  More secured login
+| 'basic'   Unsecure login
+| 'digest'  More secure login
 | 'session' Check for a PHP session variable. See 'auth_source' to set the
 |           authorization key
 |
@@ -138,7 +138,6 @@ $config['auth_source'] = 'ldap';
 |
 */
 $config['allow_auth_and_keys'] = TRUE;
-$config['strict_api_and_auth'] = TRUE; // force the use of both api and auth before a valid api request is made
 
 /*
 |--------------------------------------------------------------------------
@@ -190,7 +189,7 @@ $config['auth_library_function'] = '';
 
 /*
 |--------------------------------------------------------------------------
-| Override auth types for specific 'class/method/HTTP method'
+| Override auth types for specfic 'class/method/HTTP method'
 |--------------------------------------------------------------------------
 |
 | example:
@@ -215,34 +214,24 @@ $config['rest_valid_logins'] = ['admin' => '1234'];
 
 /*
 |--------------------------------------------------------------------------
-| Global IP White-listing
+| Global IP Whitelisting
 |--------------------------------------------------------------------------
 |
-| Limit connections to your REST server to White-listed IP addresses
+| Limit connections to your REST server to whitelisted IP addresses
 |
 | Usage:
 | 1. Set to TRUE and select an auth option for extreme security (client's IP
-|    address must be in white-list and they must also log in)
-| 2. Set to TRUE with auth set to FALSE to allow White-listed IPs access with no login
-| 3. Set to FALSE but set 'auth_override_class_method' to 'white-list' to
-|    restrict certain methods to IPs in your white-list
+|    address must be in whitelist and they must also log in)
+| 2. Set to TRUE with auth set to FALSE to allow whitelisted IPs access with no login
+| 3. Set to FALSE but set 'auth_override_class_method' to 'whitelist' to
+|    restrict certain methods to IPs in your whitelist
 |
 */
 $config['rest_ip_whitelist_enabled'] = FALSE;
 
 /*
 |--------------------------------------------------------------------------
-| REST Handle Exceptions
-|--------------------------------------------------------------------------
-|
-| Handle exceptions caused by the controller
-|
-*/
-$config['rest_handle_exceptions'] = TRUE;
-
-/*
-|--------------------------------------------------------------------------
-| REST IP White-list
+| REST IP Whitelist
 |--------------------------------------------------------------------------
 |
 | Limit connections to your REST server with a comma separated
@@ -324,8 +313,7 @@ $config['rest_keys_table'] = 'keys';
 |   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 |
 */
-
-$config['rest_enable_keys'] = TRUE;
+$config['rest_enable_keys'] = FALSE;
 
 /*
 |--------------------------------------------------------------------------
@@ -346,7 +334,6 @@ $config['rest_key_column'] = 'key';
 | Specify the method used to limit the API calls
 |
 | Available methods are :
-| $config['rest_limits_method'] = 'IP_ADDRESS'; // Put a limit per ip address
 | $config['rest_limits_method'] = 'API_KEY'; // Put a limit per api key
 | $config['rest_limits_method'] = 'METHOD_NAME'; // Put a limit on method calls
 | $config['rest_limits_method'] = 'ROUTED_URL';  // Put a limit on the routed URL
@@ -430,7 +417,6 @@ $config['rest_logs_table'] = 'logs';
 |   CREATE TABLE `access` (
 |       `id` INT(11) unsigned NOT NULL AUTO_INCREMENT,
 |       `key` VARCHAR(40) NOT NULL DEFAULT '',
-|       `all_access` TINYINT(1) NOT NULL DEFAULT '0',
 |       `controller` VARCHAR(50) NOT NULL DEFAULT '',
 |       `date_created` DATETIME DEFAULT NULL,
 |       `date_modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
