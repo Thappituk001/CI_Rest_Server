@@ -22,58 +22,58 @@ class Product extends REST_Controller {
 
 
         $id = $this->get('id');
+        print_r($product);
+        // if ($id === NULL)
+        // {
 
-        if ($id === NULL)
-        {
+        //     if ($product)
+        //     {
 
-            if ($product)
-            {
+        //         $this->response($product, REST_Controller::HTTP_OK); 
+        //     }
+        //     else
+        //     {
 
-                $this->response($product, REST_Controller::HTTP_OK); 
-            }
-            else
-            {
+        //         $this->response([
+        //             'status' => FALSE,
+        //             'message' => 'No product were found'
+        //         ], REST_Controller::HTTP_NOT_FOUND); 
+        //     }
+        // }
 
-                $this->response([
-                    'status' => FALSE,
-                    'message' => 'No product were found'
-                ], REST_Controller::HTTP_NOT_FOUND); 
-            }
-        }
+        // if ($id <= 0)
+        // {
+        //     $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); 
+        // }
+        // else
+        // {
 
-        if ($id <= 0)
-        {
-            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); 
-        }
-        else
-        {
+        //     $items = [];
 
-            $items = [];
-
-            if (!empty($product))
-            {
-                foreach ($product as $key => $value)
-                {
-                    if ( $value->product_id === $id)
-                    {
-                      array_push($items,$value);
-                  }
-                }//foreach
-            }//if
+        //     if (!empty($product))
+        //     {
+        //         foreach ($product as $key => $value)
+        //         {
+        //             if ( $value->product_id === $id)
+        //             {
+        //               array_push($items,$value);
+        //           }
+        //         }//foreach
+        //     }//if
 
 
-            if (!empty($items))
-            {
-                $this->set_response($items, REST_Controller::HTTP_OK); 
-            }
-            else
-            {
-                $this->set_response([
-                    'status' => FALSE,
-                    'message' => 'Product could not be found'
-                ], REST_Controller::HTTP_NOT_FOUND); 
-            }//else
-        }// else
+        //     if (!empty($items))
+        //     {
+        //         $this->set_response($items, REST_Controller::HTTP_OK); 
+        //     }
+        //     else
+        //     {
+        //         $this->set_response([
+        //             'status' => FALSE,
+        //             'message' => 'Product could not be found'
+        //         ], REST_Controller::HTTP_NOT_FOUND); 
+        //     }//else
+        // }// else
     }//function
 
     public function product_detail_get()
@@ -136,7 +136,6 @@ class Product extends REST_Controller {
         $child   = $this->post('child');
         $sub_child = $this->post('sub_child');
         
-
         if($result === FALSE)
         {
          $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); 
@@ -144,6 +143,7 @@ class Product extends REST_Controller {
         else
         {
             $product = $this->product_model->getProduct_By_Menu($parent,$child,$sub_child);
+
 
             if(!empty($product))
             {
@@ -195,4 +195,82 @@ class Product extends REST_Controller {
        
     }//function
     
+    public function color_post()
+    {
+        $result  = $this->post();
+       
+        if($result === FALSE)
+        {
+         $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); 
+        }
+        else
+        {
+            $product = $this->product_model->getColorToFilterColor($result);
+          
+            if(!empty($product))
+            {
+                $this->response($product, REST_Controller::HTTP_OK); 
+            }
+            else
+            {
+                $message = [
+                    'message' => 'no resource'
+                ];
+                $this->response($message, REST_Controller::HTTP_OK); 
+            }
+        }//else
+    }
+
+    public function size_post()
+    {
+        $result  = $this->post();
+       
+        if($result === FALSE)
+        {
+         $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); 
+        }
+        else
+        {
+            $product = $this->product_model->getSizeToFilterSize($result);
+          
+            if(!empty($product))
+            {
+                $this->response($product, REST_Controller::HTTP_OK); 
+            }
+            else
+            {
+                $message = [
+                    'message' => 'no resource'
+                ];
+                $this->response($message, REST_Controller::HTTP_OK); 
+            }
+        }//else
+    }
+
+    public function product_filter_post()
+    {
+        $result  = $this->post();
+      
+        if($result === FALSE)
+        {
+         $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); 
+        }
+        else
+        {
+            $product = $this->product_model->product_filter($result);
+            // print_r($product);
+            if(!empty($product))
+            {
+                $this->response($product, REST_Controller::HTTP_OK); 
+            }
+            else
+            {
+                $message = [
+                    'message' => 'no resource'
+                ];
+                $this->response($message, REST_Controller::HTTP_OK); 
+            }
+        }//else
+    }
+
 }
