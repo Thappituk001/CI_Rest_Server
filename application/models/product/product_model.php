@@ -52,7 +52,7 @@ class product_model extends CI_Model
 		// ->where('tbl_product.show_in_online',1)
 		// ->where('tbl_product.is_deleted',0)
 		// ->where('tbl_product.active',1)
-		->order_by('tbl_product.id_category', 'desc')
+		->order_by('tbl_product.id_style', 'desc')
 		->get('tbl_product');		
 		
 		if( $rs->num_rows() > 0 )
@@ -94,7 +94,7 @@ class product_model extends CI_Model
 		// ->where('tbl_product.active',1)
 		->limit(12)
 		->where('tbl_product.date_upd >=',"2017-06-01 00:00:00")
-		->order_by('tbl_product.id_category', 'desc')
+		->order_by('tbl_product.id_style', 'desc')
 		->get('tbl_product');		
 		
 		if( $qs->num_rows() > 0 )
@@ -136,7 +136,7 @@ class product_model extends CI_Model
 		// ->where('tbl_product.is_deleted',0)
 		// ->where('tbl_product.active',1)
 		->limit(8)
-		->order_by('tbl_product.id_category', 'desc')
+		->order_by('tbl_product.id_style', 'desc')
 		->get('tbl_product');		
 		
 		if( $qs->num_rows() > 0 )
@@ -170,7 +170,7 @@ class product_model extends CI_Model
 			
 			->limit(16,0)
 			
-			->order_by('tbl_product.id_category', 'desc')
+			->order_by('tbl_product.id_style', 'desc')
 			->get('tbl_product');		
 			
 
@@ -195,7 +195,7 @@ class product_model extends CI_Model
 
 			->limit(16,0)
 			
-			->order_by('tbl_product.id_category', 'desc')
+			->order_by('tbl_product.id_style', 'desc')
 			->get('tbl_product');
 
 		}else if($parent != 0 && $child != 0 && $sub_child != 0){
@@ -219,7 +219,7 @@ class product_model extends CI_Model
 			->where('product_online.id_subchild_menu',$sub_child)
 			->limit(16,0)
 			
-			->order_by('tbl_product.id_category', 'desc')
+			->order_by('tbl_product.id_style', 'desc')
 			->get('tbl_product');		
 			
 		}else{
@@ -239,7 +239,7 @@ class product_model extends CI_Model
 			->join('promotion','promotion.id_product = product_online.id_product','left')
 			->where('product_online.id_parent_menu',$parent)
 			->limit(16,0)
-			->order_by('tbl_product.id_category', 'desc')
+			->order_by('tbl_product.id_style', 'desc')
 			->get('tbl_product');		
 			
 		}
@@ -342,11 +342,11 @@ class product_model extends CI_Model
 
 	public function getColorToFilterColor($data)
 	{
-		$rs = $this->db->select("tbl_color.id,tbl_color.code,tbl_color.name,tbl_color_group.code as group_code,tbl_color_group.name as group_name")
-		->join("tbl_color","tbl_color.id = tbl_product.id_color")
-		->join("tbl_color_group","tbl_color_group.id = tbl_color.id_group")
-		->where_in('tbl_product.id_style', $data)
-		->group_by("tbl_color.id")
+		$rs = $this->db->select("tbl_color.id,tbl_color.code,tbl_color.name,tbl_color_group.id as id_group,tbl_color_group.code as group_code,tbl_color_group.name as group_name")
+		->join("tbl_color","tbl_color.id = tbl_product.id_color",'left')
+		->join("tbl_color_group","tbl_color_group.id = tbl_color.id_group",'left')
+		->where_in('tbl_product.id_style',$data)
+		->group_by("tbl_color.id_group")
 		->order_by("tbl_color.name", "acs")
 		->get("tbl_product");
 		return $rs->result();
@@ -355,7 +355,7 @@ class product_model extends CI_Model
 	public function getSizeToFilterSize($data)
 	{
 		$rs = $this->db->select("tbl_size.id,tbl_size.code,tbl_size.name")
-		->join("tbl_size","tbl_size.id = tbl_product.id_size")
+		->join("tbl_size","tbl_size.id = tbl_product.id_size",'left')
 		->where_in('tbl_product.id_style', $data)
 		->group_by("tbl_size.id")
 		->order_by("tbl_size.name", "desc")
@@ -370,39 +370,41 @@ class product_model extends CI_Model
 		$post = [];
 
 		foreach ($data as $key => $value) {
-			if($key == "color" || $key == "size")
+			if($key == "color" || $key == "size" || $key == "id_style")
 			{
 				$post[$key] = unserialize($value);
 			}
-			else{
+			else
+			{
 				$post[$key] = $value;
 			}
 		}
 
-		$rs  = $this->db->select('tbl_product.id as product_id,
+		 $this->db->select('
+				tbl_product.id as product_id,
 				tbl_product.code as product_code,
 				tbl_product.name as product_name,
 				tbl_product.price as product_price,
+				tbl_product.id_color,
 				promotion.discount_percent,
 				promotion.discount_amount,
 				tbl_product_style.id as style_id,
 				tbl_product_style.code as style_code,
 				tbl_product_style.name as style_name
-				
-				')
-			->join('tbl_product_style' , 'tbl_product_style.id = tbl_product.id_style')
-			->join('product_online','product_online.id_product = tbl_product.id')
-			->join('promotion','promotion.id_product = product_online.id_product','left')
-			->where('product_online.id_parent_menu',$post['parent'])
-			->where('product_online.id_child_menu',$post['child'])
-			->where('product_online.id_subchild_menu',$post['sub_child'])
-			->where('tbl_product.price >=',$post['minPrice'])
-			->where('tbl_product.price <=',$post['maxPrice'])
-			->where_in('tbl_product.id_color', $post['color'])
-			->where_in('tbl_product.id_size', $post['size'])
-			->limit(32,0)
-			->order_by('tbl_product.id_category', 'desc')
-			->get('tbl_product');	
+				');
+		 	$this->db->join('tbl_color','tbl_color.id = tbl_product.id_color');
+		 	$this->db->join('tbl_color_group','tbl_color_group.id = tbl_color.id_group');
+			$this->db->join('tbl_product_style','tbl_product_style.id = tbl_product.id_style');
+			$this->db->join('promotion','promotion.id_product = tbl_product.id','left');
+			$this->db->where('tbl_product.price >=',$post['minPrice']);
+			$this->db->where('tbl_product.price <=',$post['maxPrice']);
+			$this->db->where_in('tbl_product.id_style',$post['id_style']);
+			$this->db->where_in('tbl_color_group.id',$post['color']);
+			$this->db->where_in('tbl_product.id_size', $post['size']);		
+			$this->db->limit(32,0);
+			$this->db->group_by('tbl_product.id_style');
+			$this->db->order_by('tbl_color.id', 'desc');
+			$rs  = $this->db->get('tbl_product');	
 
 
 		return $rs->result();

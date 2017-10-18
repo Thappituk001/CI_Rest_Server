@@ -250,7 +250,7 @@ class Product extends REST_Controller {
     public function product_filter_post()
     {
         $result  = $this->post();
-      
+        
         if($result === FALSE)
         {
          $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); 
