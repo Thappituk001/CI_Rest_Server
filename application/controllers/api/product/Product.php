@@ -273,4 +273,171 @@ class Product extends REST_Controller {
         }//else
     }
 
-}
+     public function product_grid_get()
+    {
+        $result  = $this->get('id',true);
+        // print_r($result);
+        if($result === FALSE)
+        {
+         $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); 
+        }
+        else
+        {
+            $product = $this->product_model->product_grid($result);
+            // print_r($product);
+            if(!empty($product))
+            {
+                $this->response($product, REST_Controller::HTTP_OK); 
+            }
+            else
+            {
+                $message = [
+                    'message' => 'no resource'
+                ];
+                $this->response($message, REST_Controller::HTTP_OK); 
+            }
+        }//else
+    }
+
+
+    public function ProductDetail_get()
+    {
+       $result  = $this->get('id',true);
+        // print_r($result);
+        if($result === FALSE)
+        {
+         $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); 
+        }
+        else
+        {
+            $product = $this->product_model->getProductDetail($result);
+            // print_r($product);
+            if(!empty($product))
+            {
+                $this->response($product, REST_Controller::HTTP_OK); 
+            }
+            else
+            {
+                $message = [
+                    'message' => 'no resource'
+                ];
+                $this->response($message, REST_Controller::HTTP_OK); 
+            }
+        }//else
+    }
+
+
+    public function product_images_get()
+    {
+       $result  = $this->get('id',true);
+        // print_r($result);
+        if($result === FALSE)
+        {
+         $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); 
+        }
+        else
+        {
+            $product = $this->product_model->getproduct_images($result);
+            // print_r($product);
+            if(!empty($product))
+            {
+                $this->response($product, REST_Controller::HTTP_OK); 
+            }
+            else
+            {
+                $message = [
+                    'message' => 'no resource'
+                ];
+                $this->response($message, REST_Controller::HTTP_OK); 
+            }
+        }//else
+    }
+
+    public function moreFeatures_get()
+    {
+        $result  = $this->get('offset',true);
+        // print_r($result);
+        if($result === FALSE)
+        {
+         $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); 
+        }
+        else
+        {
+            $product = $this->product_model->moreFeatures($result);
+            // print_r($product);
+            if(!empty($product))
+            {
+                $this->response($product, REST_Controller::HTTP_OK); 
+            }
+            else
+            {
+                $message = [
+                    'message' => 'no resource'
+                ];
+                $this->response($message, REST_Controller::HTTP_OK); 
+            }
+        }//else
+    }
+
+
+    public function moreProduct_get()
+    {
+        $offset  = $this->get('offset',true);
+        $parent  = $this->get('parent',true);
+        $child  = $this->get('child',true);
+        $sub_child  = $this->get('sub_child',true);
+
+        if($offset === FALSE)
+        {
+         $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); 
+        }
+        else
+        {
+            $product = $this->product_model->moreProduct($offset,$parent,$child,$sub_child);
+            // print_r($product);
+            if(!empty($product))
+            {
+                $this->response($product, REST_Controller::HTTP_OK); 
+            }
+            else
+            {
+                $message = [
+                    'message' => 'no resource'
+                ];
+                $this->response($message, REST_Controller::HTTP_OK); 
+            }
+        }//else
+    }
+
+    public function SizeByColor_get()
+    {
+
+        $style = $this->get('style',true);
+        $color  = $this->get('color',true);
+    
+        if($offset === FALSE)
+        {
+         $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); 
+        }
+        else
+        {
+            $product = $this->product_model->getSizeByColor($style,$color);
+            
+            if(!empty($product))
+            {
+                $this->response($product, REST_Controller::HTTP_OK); 
+            }
+            else
+            {
+                $message = [
+                    'message' => 'no resource'
+                ];
+                $this->response($message, REST_Controller::HTTP_OK); 
+            }
+        }//else
+    }//function
+
+   
+
+
+}//class
