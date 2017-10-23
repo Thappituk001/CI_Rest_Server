@@ -150,56 +150,7 @@ class product_model extends CI_Model
 	}
 
 	public function getProduct_By_Menu($parent= 0,$child= 0,$sub_child= 0)
-	{
-		if($parent != 0 && $child == 0 && $sub_child == 0){
-			$rs  = $this->db->select('tbl_product.id as product_id,
-				tbl_product.code as product_code,
-				tbl_product.name as product_name,
-				tbl_product.price as product_price,
-				promotion.discount_percent,
-				promotion.discount_amount,
-				tbl_product_style.id as style_id,
-				tbl_product_style.code as style_code,
-				tbl_product_style.name as style_name
-				
-				')
-			->join('tbl_product_style' , 'tbl_product_style.id = tbl_product.id_style')
-			->join('product_online','product_online.id_product = tbl_product.id')
-			->join('promotion','promotion.id_product = product_online.id_product','left')
-			->where('product_online.id_parent_menu',$parent)
-			
-			->limit(16,0)
-			
-			->order_by('tbl_product.id_style', 'desc')
-			->get('tbl_product');		
-			
-
-		}else if($parent != 0 && $child != 0 && $sub_child == 0){
-			
-			$rs  = $this->db->select('tbl_product.id as product_id,
-				tbl_product.code as product_code,
-				tbl_product.name as product_name,
-				tbl_product.price as product_price,
-				promotion.discount_percent,
-				promotion.discount_amount,
-				tbl_product_style.id as style_id,
-				tbl_product_style.code as style_code,
-				tbl_product_style.name as style_name
-				
-				')
-			->join('tbl_product_style' , 'tbl_product_style.id = tbl_product.id_style')
-			->join('product_online','product_online.id_product = tbl_product.id')
-			->join('promotion','promotion.id_product = product_online.id_product','left')
-			->where('product_online.id_parent_menu',$parent)
-			->where('product_online.id_child_menu',$child)
-
-			->limit(16,0)
-			
-			->order_by('tbl_product.id_style', 'desc')
-			->get('tbl_product');
-
-		}else if($parent != 0 && $child != 0 && $sub_child != 0){
-			
+	{	
 			$rs  = $this->db->select('tbl_product.id as product_id,
 				tbl_product.code as product_code,
 				tbl_product.name as product_name,
@@ -218,31 +169,9 @@ class product_model extends CI_Model
 			->where('product_online.id_child_menu',$child)
 			->where('product_online.id_subchild_menu',$sub_child)
 			->limit(16,0)
-			
 			->order_by('tbl_product.id_style', 'desc')
 			->get('tbl_product');		
 			
-		}else{
-			$rs  = $this->db->select('tbl_product.id as product_id,
-				tbl_product.code as product_code,
-				tbl_product.name as product_name,
-				tbl_product.price as product_price,
-				promotion.discount_percent,
-				promotion.discount_amount,
-				tbl_product_style.id as style_id,
-				tbl_product_style.code as style_code,
-				tbl_product_style.name as style_name
-				
-				')
-			->join('tbl_product_style' , 'tbl_product_style.id = tbl_product.id_style')
-			->join('product_online','product_online.id_product = tbl_product.id')
-			->join('promotion','promotion.id_product = product_online.id_product','left')
-			->where('product_online.id_parent_menu',$parent)
-			->limit(16,0)
-			->order_by('tbl_product.id_style', 'desc')
-			->get('tbl_product');		
-			
-		}
 
 		if( $rs->num_rows() > 0 )
 		{
@@ -405,7 +334,6 @@ class product_model extends CI_Model
 		$this->db->group_by('tbl_product.id_style');
 		$this->db->order_by('tbl_color.id', 'desc');
 		$rs  = $this->db->get('tbl_product');	
-
 
 		return $rs->result();
 	}
@@ -589,8 +517,72 @@ class product_model extends CI_Model
 		}	
 	}
 
+	public function grid_product($post_data)
+	{
+		$rs = $this->db->select("tbl_product.id")
+		->where('tbl_product.id_style',$post_data['id_style'])
+		->where('tbl_product.id_size',$post_data['id_size'])
+		->where('tbl_product.id_color',$post_data['id_color'])
+		->get('tbl_product');
 
+		if( $rs->num_rows() > 0 )
+		{
+			return $rs->result()[0];	
+		}
+		else
+		{
+			return FALSE;
+		}	
+	}
 
+	public function addToCart($data)
+	{
+		if(!empty($data)){
+			$x_insert = [];
+			$x_ins = 0;
+			$x_upd = 0;
+			foreach ( $data as $k => $value) {
+
+				$rs = $this->db->select('cart_product_online.id_product,cart_product_online.qty')
+				->where('cart_product_online.id_product',$value['id_product'])
+				->where('cart_product_online.id_cart_online',$value['id_cart_online'])
+				->get('cart_product_online');
+
+				if($rs->num_rows() <= 0)
+				{
+					array_push($x_insert,@array("id_cart_product_online"=>'',"id_cart_online"=>$value['id_cart_online'],"id_product"=>$value['id_product'],"qty"=>$value['qty']));
+				}
+				else//return id_product and qty of dupplicate item
+				{
+					if($this->db->where('cart_product_online.id_product',$value['id_product'])
+				    ->where('cart_product_online.id_cart_online',$value['id_cart_online'])
+					->update('cart_product_online',array("qty"=>$value['qty']+$rs->result()[0]->qty)))
+					{
+					  $x_upd = 1;
+					}
+				}
+
+			}//foreach
+			if(!empty($x_insert)){
+				if($this->db->where('cart_product_online.id_product',$value['id_product'])
+					    ->where('cart_product_online.id_cart_online',$value['id_cart_online'])
+						->insert_batch('cart_product_online',$x_insert))
+				{
+					$x_ins = 1;
+				}
+			}
+
+			$a_and_bool = $x_ins + $x_upd;
+			if($a_and_bool >= 1){
+				return "success";
+			}
+			else{
+				return "false";
+			}
+			
+			
+		}//if
+	}
 
 
 

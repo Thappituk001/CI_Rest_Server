@@ -437,7 +437,31 @@ class Product extends REST_Controller {
         }//else
     }//function
 
-   
+   public function ProdctFormGrid_post()
+   {
+       $post_data = $this->post();
+        
+       if($post_data === FALSE)
+        {
+         $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); 
+        }
+        else
+        {
+             $product = $this->product_model->grid_product($post_data);
+            
+            if(!empty($product))
+            {
+                $this->response($product, REST_Controller::HTTP_OK); 
+            }
+            else
+            {
+                $message = [
+                    'message' => 'no resource'
+                ];
+                $this->response($message, REST_Controller::HTTP_OK); 
+            }
+        }
+   }
 
 
 }//class

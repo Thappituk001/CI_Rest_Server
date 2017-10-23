@@ -16,7 +16,7 @@ class users_model extends CI_Model
 		return $array;
 	}
 
-	public function getVisitor($ip_address)
+	public function Validate_Great($ip_address)
 	{
 		$rs = $this->db->select('id_great')->where('ip_address', $ip_address)->get('great');
 		if( $rs->num_rows() == 1 )

@@ -95,12 +95,12 @@ class Users extends REST_Controller {
         $this->set_response($message, REST_Controller::HTTP_CREATED); 
     }
 
-     public function getVisitor_post()
+     public function Validate_Great_post()
     {
 
         $result  = $this->post();
         $ip      = $this->post('ip_address');
-
+        // print_r($ip);
        
         if($result === FALSE)
         {
@@ -108,8 +108,8 @@ class Users extends REST_Controller {
         }
         else
         {
-            $user = $this->users_model->getVisitor($ip);
-
+            $user = $this->users_model->Validate_Great($ip);
+            // print_r($user);
             if(!empty($user))
             {
                 $this->response($user, REST_Controller::HTTP_OK); 

@@ -90,9 +90,10 @@ class Cart extends REST_Controller {
         else
         {
             $this->response($result);
+            $this->set_response($message, REST_Controller::HTTP_CREATED); // CREATED (201)
         }
 
-        $this->set_response($message, REST_Controller::HTTP_CREATED); // CREATED (201) 
+         
     }
 
     public function cart_delete($id)
@@ -109,6 +110,33 @@ class Cart extends REST_Controller {
         ];
 
         $this->set_response($message, REST_Controller::HTTP_NO_CONTENT); // NO_CONTENT (204)
+    }
+
+    public function addToCart_post()
+    {
+        $post_data = $this->post();
+        
+       if($post_data === FALSE)
+        {
+         $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); 
+        }
+        else
+        {
+             $item = $this->product_model->addToCart($post_data);
+            
+            if(!empty($item))
+            {
+                $this->response($item, REST_Controller::HTTP_OK); 
+            }
+            else
+            {
+                $message = [
+                    'message' => 'no resource'
+                ];
+                $this->response($message, REST_Controller::HTTP_OK); 
+            }
+        }
+   
     }
 
 }
