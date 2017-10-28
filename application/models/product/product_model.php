@@ -535,57 +535,7 @@ class product_model extends CI_Model
 		}	
 	}
 
-	public function addToCart($data)
-	{
-		if(!empty($data)){
-			$x_insert = [];
-			$x_ins = 0;
-			$x_upd = 0;
-			foreach ( $data as $k => $value) {
-
-				$rs = $this->db->select('cart_product_online.id_product,cart_product_online.qty')
-				->where('cart_product_online.id_product',$value['id_product'])
-				->where('cart_product_online.id_cart_online',$value['id_cart_online'])
-				->get('cart_product_online');
-
-				if($rs->num_rows() <= 0)
-				{
-					array_push($x_insert,@array("id_cart_product_online"=>'',"id_cart_online"=>$value['id_cart_online'],"id_product"=>$value['id_product'],"qty"=>$value['qty']));
-				}
-				else//return id_product and qty of dupplicate item
-				{
-					if($this->db->where('cart_product_online.id_product',$value['id_product'])
-				    ->where('cart_product_online.id_cart_online',$value['id_cart_online'])
-					->update('cart_product_online',array("qty"=>$value['qty']+$rs->result()[0]->qty)))
-					{
-					  $x_upd = 1;
-					}
-				}
-
-			}//foreach
-			if(!empty($x_insert)){
-				if($this->db->where('cart_product_online.id_product',$value['id_product'])
-					    ->where('cart_product_online.id_cart_online',$value['id_cart_online'])
-						->insert_batch('cart_product_online',$x_insert))
-				{
-					$x_ins = 1;
-				}
-			}
-
-			$a_and_bool = $x_ins + $x_upd;
-			if($a_and_bool >= 1){
-				return "success";
-			}
-			else{
-				return "false";
-			}
-			
-			
-		}//if
-	}
-
-
-
+	
 
 }// end class;
 

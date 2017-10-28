@@ -115,14 +115,14 @@ class Cart extends REST_Controller {
     public function addToCart_post()
     {
         $post_data = $this->post();
-        
+        // print_r($post_data);
        if($post_data === FALSE)
         {
          $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); 
         }
         else
         {
-             $item = $this->product_model->addToCart($post_data);
+             $item = $this->cart_model->addToCart($post_data);
             
             if(!empty($item))
             {
@@ -135,8 +135,13 @@ class Cart extends REST_Controller {
                 ];
                 $this->response($message, REST_Controller::HTTP_OK); 
             }
-        }
+        }//else
    
-    }
+    }//finction
 
-}
+
+
+
+
+
+}//class
